@@ -7,3 +7,9 @@
 - wyraźnie (bardzo wyraźnie) oznaczona głośność poszczególnych elementów (np. jak głośno gra ścieżka dżingli, jak głośno gra ścieżka tła)
 
 - obsługa sporej liczby dżingli (najlepiej grid 4x4 kafelki, na 12" ekranie 800x600 - 1 kafelek winien mieć ~1,5cm krótszy bok na ekranie 12" przy 800x600, odstępy między kafelkami ~0,5cm)
+
+- obsluga dziwnego kodowania
+
+- obsluga zmiany glosnosci
+
+
