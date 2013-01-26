@@ -152,6 +152,15 @@
         <height>32</height>
        </rect>
       </property>
+      <property name="maximumVolume">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="tracking">
+       <bool>false</bool>
+      </property>
+      <property name="muteVisible">
+       <bool>true</bool>
+      </property>
      </widget>
      <widget class="QCheckBox" name="seek_locked">
       <property name="geometry">

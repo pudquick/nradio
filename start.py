@@ -5,7 +5,7 @@ import sys, id3reader, audioread
 from PyQt4 import QtCore, QtGui
 from PyQt4.phonon import Phonon
 from os.path import isfile
-from time import time
+from time import time, sleep
 from datetime import datetime
 
 # ui import
@@ -15,6 +15,7 @@ class StartQT4(QtGui.QMainWindow):
 	def __init__(self, parent=None):
 
 		self.player = None
+		self.time_sleep = 300
 
 		self.j2 = None
 		self.isjingle = 1
@@ -28,6 +29,8 @@ class StartQT4(QtGui.QMainWindow):
 		self.ui = Ui_nradio()
 		self.ui.setupUi(self)
 		self.PlaylistEta = QtCore.QTimer()
+		self.timer = QtCore.QTimer()
+
 		QtCore.QObject.connect(self.ui.add_new,QtCore.SIGNAL("clicked()"), self.add_new)
 		QtCore.QObject.connect(self.ui.add_m3u,QtCore.SIGNAL("clicked()"), self.add_m3u)
 		QtCore.QObject.connect(self.ui.delete_button,QtCore.SIGNAL("clicked()"), self.delete_pos)
@@ -43,13 +46,10 @@ class StartQT4(QtGui.QMainWindow):
 		QtCore.QObject.connect(self.ui.seek_locked, QtCore.SIGNAL("stateChanged(int)"), self.seek_locked)
 
 		self.player = Phonon.MediaObject(self)
-		self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
-		Phonon.createPath(self.player, self.audioOutput)
-		self.ui.player_seek.setMediaObject(self.player)
-		self.ui.player_volume.setAudioOutput(self.audioOutput)
+		self.jingle = Phonon.MediaObject(self)
 
 		QtCore.QObject.connect(self.PlaylistEta, QtCore.SIGNAL("timeout()"), self.UpdatePlaylistEta)
-		QtCore.QObject.connect(self.player, QtCore.SIGNAL("finished()"), self.jingleEnd)
+		QtCore.QObject.connect(self.jingle, QtCore.SIGNAL("finished()"), self.jingleEnd)
 		self.PlaylistEta.start(1000)
 
 	def save_settings(self):
@@ -106,49 +106,50 @@ class StartQT4(QtGui.QMainWindow):
 			time3 = self.player.remainingTime()
 			self.ui.lcd1.setText(str(time2/60000) + ":" + str((time2/1000)%60) + " -" + str(time3/60000) + ":" + str((time3/1000)%60))
 
-	def play_button(self):
-		if not self.player:
-			self.player = Phonon.MediaObject(self)
-			self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
-			Phonon.createPath(self.player, self.audioOutput)
-			self.ui.player_seek.setMediaObject(self.player)
-			self.ui.player_volume.setAudioOutput(self.audioOutput)
-			
-		# for debug
-		self.player.setCurrentSource(Phonon.MediaSource('/media/DYSK/muzyka/Cisza jak ta/Cisza Jak Ta - Bo tak Cie kocham....mp3'))
-		self.audioOutput.setVolume(0.5)
-		self.player.play()
+	# WARNING!
+	# Phonon has to wait some time for audioOutput to get working, so we need some time (e.g. 500ms before changing volume)
+	def change_volume(self, to):
+		self.setvolume = to
+		audioOutput.setVolume(to)
+		self.timer.singleShot(self.time_sleep, self.singletimer)
 
+	def play_button(self):
+		global audioOutput
+		self.player.setCurrentSource(Phonon.MediaSource('/media/DYSK/muzyka/Cisza jak ta/Cisza Jak Ta - Bo tak Cie kocham....mp3'))
+		audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
+		audioOutput.setName('nradio')
+		self.ui.player_volume.setAudioOutput(audioOutput)
+		self.ui.player_seek.setMediaObject(self.player)
+		Phonon.createPath(self.player, audioOutput)
+		self.player.play()
+		self.change_volume(0.2) #debug only	
+	
 	def pause_button(self):
 		self.player.pause()
 
 	def stop_button(self):
 		self.player.stop()
-
-	def jingle_start(self):
-		self.currenttime = self.player.currentTime()
-		self.player.stop()
-		self.audioOutput.setVolume(self.audioOutput.volume()*self.jingle_volume/100.0)
-		self.player.setCurrentSource(Phonon.MediaSource(self.jinglefile))
-		self.audioOutput.setVolume(self.audioOutput.volume()*self.jingle_volume/100.0)
-		self.player.play()
-		self.isjingle = 0
 		
+	def jingle_start(self):
+		audioOutput.setName('nradio')
+		Phonon.createPath(self.jingle, audioOutput)
+		self.jingle.setCurrentSource(Phonon.MediaSource(self.jinglefile))
+
+		self.player.pause()
+		self.jingle.play()
+		self.change_volume(audioOutput.volume()*self.jingle_volume/100.0)
+
 		self.ui.jingle_volume.readOnly = True
 		self.ui.volume_locked.setChecked(False)
 		self.ui.seek_locked.setChecked(False)
 
 	def jingleEnd(self):
-		if(self.isjingle == 0):
-			self.isjingle = 1
-			self.ui.jingle_volume.readOnly = False
-			self.ui.volume_locked.setChecked(True)
-			self.audioOutput.setVolume(self.audioOutput.volume()/(self.jingle_volume/100.0))
-			self.ui.seek_locked.setChecked(True)
-			self.player.setCurrentSource(Phonon.MediaSource('/media/DYSK/muzyka/Cisza jak ta/Cisza Jak Ta - Bo tak Cie kocham....mp3'))
-			self.player.play()
-			self.player.seek(self.currenttime)
-			self.audioOutput.setVolume(self.audioOutput.volume()/(self.jingle_volume/100.))
+		self.ui.jingle_volume.readOnly = False
+		self.ui.volume_locked.setChecked(True)
+		self.ui.seek_locked.setChecked(True)
+			
+		self.player.play()
+		self.change_volume(audioOutput.volume()/(self.jingle_volume/100.0))
 
 	def volume_locked(self, i):
 		if(i == 0):
@@ -161,6 +162,9 @@ class StartQT4(QtGui.QMainWindow):
 			self.ui.player_seek.setEnabled(False)
 		else:
 			self.ui.player_seek.setEnabled(True)
+
+	def singletimer(self):
+			audioOutput.setVolume(self.setvolume)
 
 if __name__ == "__main__":
 	app = QtGui.QApplication(sys.argv)
