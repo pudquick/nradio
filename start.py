@@ -15,7 +15,8 @@ class StartQT4(QtGui.QMainWindow):
 	def __init__(self, parent=None):
 
 		self.player = None
-		self.time_sleep = 300
+		self.timer_sleep = 100
+		self.timer_count = 0
 
 		self.j2 = None
 		self.isjingle = 1
@@ -28,6 +29,7 @@ class StartQT4(QtGui.QMainWindow):
 		QtGui.QWidget.__init__(self, parent)
 		self.ui = Ui_nradio()
 		self.ui.setupUi(self)
+
 		self.PlaylistEta = QtCore.QTimer()
 		self.timer = QtCore.QTimer()
 
@@ -111,7 +113,7 @@ class StartQT4(QtGui.QMainWindow):
 	def change_volume(self, to):
 		self.setvolume = to
 		audioOutput.setVolume(to)
-		self.timer.singleShot(self.time_sleep, self.singletimer)
+		self.timer.singleShot(self.timer_sleep, self.singletimer)
 
 	def play_button(self):
 		global audioOutput
@@ -165,6 +167,11 @@ class StartQT4(QtGui.QMainWindow):
 
 	def singletimer(self):
 			audioOutput.setVolume(self.setvolume)
+			if(self.timer_count < 10)
+				self.timer_count += 1
+				self.timer.singleShot(self.timer_sleep, self.singletimer)
+			else:
+				self.time_count = 0
 
 if __name__ == "__main__":
 	app = QtGui.QApplication(sys.argv)
