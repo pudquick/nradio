@@ -127,13 +127,16 @@ class StartQT4(QtGui.QMainWindow):
 			if (self.jingle_volume_abs == None) and (self.jingle_volume == None):
 				self.ui.jingle_volume.setText('100')
 				self.jingle_volume = 100
+			# TODO what if it's not media file?
 			self.ui.jingle_file.setText(self.jinglefile)
 
-							            
+				
+	# TODO rest, autosave :-)			
 	def save_settings(self):
 		self.jingletime = int(self.ui.jingle_time.text())
 		self.jingle_volume = int(self.ui.jingle_volume.text())
 
+	# TODO what if it's not media file?
 	def set_jingle(self):
 		fd = QtGui.QFileDialog(self)
 		self.filename = fd.getOpenFileName()
@@ -169,6 +172,7 @@ class StartQT4(QtGui.QMainWindow):
 				if isfile(l):
 					self.add_file(l)
 
+	# TODO autoplay
 	def add_new(self):
 		fd = QtGui.QFileDialog(self)
 		self.filename = fd.getOpenFileName()
@@ -180,6 +184,7 @@ class StartQT4(QtGui.QMainWindow):
 		for item in self.ui.playlist.selectedItems():
 			    (item.parent() or root).removeChild(item)
 
+	# TODO first song should have minus time
 	def UpdatePlaylistEta(self):
 		eta = 0
 		for i in xrange(self.ui.playlist.topLevelItemCount()):
