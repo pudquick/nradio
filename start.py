@@ -7,6 +7,7 @@ from PyQt4.phonon import Phonon
 from os.path import isfile
 from time import time, sleep
 from datetime import datetime
+from re import sub
 
 # ui import
 from nradio import Ui_nradio
@@ -20,12 +21,15 @@ class StartQT4(QtGui.QMainWindow):
 
 		self.j2 = None
 		self.isjingle = 1
-		self.jingletime = 0
-		self.jingle_volume = 100
-		self.jinglefile = "../plik.mp3"
+		self.jingletime = None
+		self.jingle_volume = None
+		self.jingle_volume_abs = None
+		self.jinglefile = None
 		self.jingleTimeLeft = -1
 		self.currenttime = 0
 
+		self.settings_file = './nradio.conf'
+	
 		QtGui.QWidget.__init__(self, parent)
 		self.ui = Ui_nradio()
 		self.ui.setupUi(self)
@@ -36,6 +40,8 @@ class StartQT4(QtGui.QMainWindow):
 		QtCore.QObject.connect(self.ui.add_new,QtCore.SIGNAL("clicked()"), self.add_new)
 		QtCore.QObject.connect(self.ui.add_m3u,QtCore.SIGNAL("clicked()"), self.add_m3u)
 		QtCore.QObject.connect(self.ui.delete_button,QtCore.SIGNAL("clicked()"), self.delete_pos)
+		QtCore.QObject.connect(self.ui.set_jingle,QtCore.SIGNAL("clicked()"), self.set_jingle)
+		QtCore.QObject.connect(self.ui.save_to_file_button,QtCore.SIGNAL("clicked()"), self.save_file_settings)
 
 		QtCore.QObject.connect(self.ui.play_button, QtCore.SIGNAL("clicked()"), self.play_button)
 		QtCore.QObject.connect(self.ui.pause_button, QtCore.SIGNAL("clicked()"), self.pause_button)
@@ -52,11 +58,88 @@ class StartQT4(QtGui.QMainWindow):
 
 		QtCore.QObject.connect(self.PlaylistEta, QtCore.SIGNAL("timeout()"), self.UpdatePlaylistEta)
 		QtCore.QObject.connect(self.jingle, QtCore.SIGNAL("finished()"), self.jingleEnd)
+
+		self.load_file_settings()
+
 		self.PlaylistEta.start(1000)
 
+	def save_file_settings(self):
+		self.save_settings()
+		plik = open(self.settings_file, 'w')
+		plik.write("jingle_time=" + str(self.jingletime))
+		plik.write("\njingle_file=" + str(self.jinglefile))
+		if self.jingle_volume > 0:
+			plik.write("\njingle_volume=" + str(self.jingle_volume))
+		else:
+			plik.write("\njingle_volume_abs=" + str(self.jingle_volume_abs))
+		plik.close()
+
+	def load_file_settings(self):
+		try:
+			plik = open(self.settings_file)
+		except:
+			self.jingletime = 0
+			self.jingle_volume = 100
+			self.jinglefile = "../plik.mp3"
+			self.save_file_settings()
+		else:
+			data = plik.readline()
+			while (data != ''):
+				datas = sub('\n$', '', data).split("=")
+				if datas[0] == 'jingle_time':
+					try:
+						self.jingletime = int(datas[1])
+					except:
+						self.jingletime = 0
+				elif datas[0] == 'jingle_volume':
+					try:
+						self.jingle_volume = int(datas[1])
+					except:
+						self.jingle_volume = 100
+				elif datas[0] == 'jingle_volume_abs':
+					try:
+						self.jingle_volume = int(datas[1])
+					except:
+						self.jingle_volume = 1
+				elif datas[0] == 'jingle_file':
+					if isfile(datas[1]):
+						self.jinglefile = datas[1]
+				data = plik.readline()
+			plik.close()
+
+			if self.jinglefile == None:
+				self.jinglefile = ""
+			if self.jingletime == None:
+				self.jingletime = 0
+
+			self.ui.jingle_time.setText(str(self.jingletime))
+
+			if self.jingle_volume != None:
+				if self.jingle_volume > 0:
+					self.ui.jingle_volume.setText(str(self.jingle_volume))
+				else:
+					self.jingle_volume = None
+			if self.jingle_volume_abs != None:
+				if self.jingle_volume_abs > 0:
+					self.ui.jingle_volume_abs.setText(str(self.jingle_volume_abs))
+				else:
+					self.jingle_volume_abs = None
+			if (self.jingle_volume_abs == None) and (self.jingle_volume == None):
+				self.ui.jingle_volume.setText('100')
+				self.jingle_volume = 100
+			self.ui.jingle_file.setText(self.jinglefile)
+
+							            
 	def save_settings(self):
 		self.jingletime = int(self.ui.jingle_time.text())
 		self.jingle_volume = int(self.ui.jingle_volume.text())
+
+	def set_jingle(self):
+		fd = QtGui.QFileDialog(self)
+		self.filename = fd.getOpenFileName()
+		if isfile(self.filename):
+			self.jinglefile = self.filename
+			self.ui.jingle_file.setText(self.filename)
 
 	def add_file(self, fil):
 		a = QtGui.QTreeWidgetItem(self.ui.playlist)
@@ -167,7 +250,7 @@ class StartQT4(QtGui.QMainWindow):
 
 	def singletimer(self):
 			audioOutput.setVolume(self.setvolume)
-			if(self.timer_count < 10)
+			if(self.timer_count < 10):
 				self.timer_count += 1
 				self.timer.singleShot(self.timer_sleep, self.singletimer)
 			else:

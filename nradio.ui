@@ -27,7 +27,7 @@
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -285,7 +285,7 @@
       <property name="flat">
        <bool>true</bool>
       </property>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="set_jingle">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -311,13 +311,13 @@
         <string>Aktualnie wybrany:</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="jingle_file">
        <property name="geometry">
         <rect>
          <x>140</x>
          <y>50</y>
-         <width>59</width>
-         <height>15</height>
+         <width>591</width>
+         <height>16</height>
         </rect>
        </property>
        <property name="text">
@@ -331,7 +331,7 @@
         <x>20</x>
         <y>110</y>
         <width>741</width>
-        <height>221</height>
+        <height>241</height>
        </rect>
       </property>
       <property name="autoFillBackground">
@@ -437,7 +437,7 @@
       <widget class="QLabel" name="label_8">
        <property name="geometry">
         <rect>
-         <x>80</x>
+         <x>100</x>
          <y>160</y>
          <width>131</width>
          <height>16</height>
@@ -450,7 +450,7 @@
       <widget class="QLineEdit" name="jingle_volume">
        <property name="geometry">
         <rect>
-         <x>20</x>
+         <x>40</x>
          <y>150</y>
          <width>51</width>
          <height>25</height>
@@ -500,6 +500,51 @@
        </property>
        <property name="text">
         <string>ODPAL</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="jingle_volume_abs">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>580</x>
+         <y>150</y>
+         <width>51</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="inputMethodHints">
+        <set>Qt::ImhDigitsOnly</set>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="save_to_file_button">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>210</y>
+         <width>131</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>ZAPISZ DO PLIKU</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_14">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>220</y>
+         <width>411</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>PAMIĘTAJ O ZAPISANIU USTAWIEŃ DO PLIKU NA KONIEC PRACY!</string>
        </property>
       </widget>
      </widget>
@@ -682,58 +727,6 @@
      <attribute name="title">
       <string>Ustawienia</string>
      </attribute>
-     <widget class="QGroupBox" name="groupBox_3">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>751</width>
-        <height>191</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>GroupBox</string>
-      </property>
-      <widget class="QLabel" name="label_9">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>30</y>
-         <width>131</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Miejsce zapisu opcji:</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButton_2">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>50</y>
-         <width>51</width>
-         <height>27</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>zmień</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButton_3">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>80</y>
-         <width>51</width>
-         <height>27</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>zapisz</string>
-       </property>
-      </widget>
-     </widget>
     </widget>
    </widget>
   </widget>
